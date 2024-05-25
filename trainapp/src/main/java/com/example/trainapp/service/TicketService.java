@@ -38,7 +38,7 @@ public class TicketService {
         // Save user to repository
         User savedUser = userRepository.save(user);
 
-        // Find a seat (Assume the seat allocation logic is more complex in a real app)
+        // Find a seat 
         Seat seat = allocateSeat();
 
         // Create new Ticket entity
@@ -92,9 +92,9 @@ public class TicketService {
         ticketRepository.delete(ticket);
     }
 
-    // Allocate seat (simple allocation logic for demo purposes)
+    // Allocate seat 
     private Seat allocateSeat() {
-        // Find an available seat (implement more complex logic in a real app)
+        // Find an available seat 
         Optional<Seat> availableSeat = seatRepository.findByIsOccupiedFalse();
         if (!availableSeat.isPresent()) {
             throw new ResourceNotFoundException("No available seats found");
