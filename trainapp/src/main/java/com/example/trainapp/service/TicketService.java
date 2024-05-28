@@ -70,13 +70,29 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id " + ticketId));
 
+        // Find current seat allocated to the user
+        Seat currentSeat = ticket.getSeat();
+
         // Find new seat by requested section and seat number
-        Seat seat = seatRepository.findBySectionAndSeatNumber(seatRequest.getSection(), seatRequest.getSeatNumber())
+        Seat newSeat = seatRepository.findBySectionAndSeatNumber(seatRequest.getSection(), seatRequest.getSeatNumber())
                 .orElseThrow(() -> new ResourceNotFoundException("Seat not found with section " +
                         seatRequest.getSection() + " and seat number " + seatRequest.getSeatNumber()));
 
+        // Ensure the new seat is not already occupied
+        if (newSeat.isOccupied()) {
+            throw new ResourceNotFoundException("Seat " + seatRequest.getSection() + "-" + seatRequest.getSeatNumber() + " is already occupied.");
+        }
+
+        // Mark the current seat as not occupied
+        currentSeat.setOccupied(false);
+        seatRepository.save(currentSeat);
+
+        // Mark the new seat as occupied
+        newSeat.setOccupied(true);
+        seatRepository.save(newSeat);
+
         // Update ticket with new seat
-        ticket.setSeat(seat);
+        ticket.setSeat(newSeat);
 
         // Save updated ticket to repository
         return ticketRepository.save(ticket);
