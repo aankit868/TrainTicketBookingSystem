@@ -104,6 +104,11 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id " + ticketId));
 
+        // Set the current seat as not occupied
+        Seat seat = ticket.getSeat();
+        seat.setOccupied(false);
+        seatRepository.save(seat);
+
         // Delete ticket from repository
         ticketRepository.delete(ticket);
     }
